@@ -1,14 +1,22 @@
 import pygame
 import json
 import os
+from typing import Optional
 
 
 class Grid():
-    def __init__(self, x: int, y: int) -> None:
+    def __init__(self, x: int, y: int, parent: Optional['Grid'] = None) -> None:
         self.members = {}
-        self.margin = 5  # margin between each member in pixels
-        self.x = 0
-        self.y = 0
+        self.margin = 0  # margin between each member in pixels
+        self.parent = parent
+        self.x, self.y = (parent.x + x, parent.y + y) if parent is not None else (x, y)
+        # will be used to store the original position of the grid when updating members positions
+        self.pos = (self.x, self.y)
+        self.width = 0
+        self.height = 0
+
+        self.row = 0
+        self.column = 0
 
     def add(self, member, new_member_row, new_member_column) -> tuple[int, int]:
         """
@@ -34,12 +42,11 @@ class Grid():
                 self.members[row_key].pop(self.get_key(member, row_key))
                 print("found it")
 
-        # Add the new member into self.members if the row doesn't exists
+        # Add the row to self.members if it doesn't exist
         if str(new_member_row) not in self.members.keys():
             self.members[str(new_member_row)] = {}
-            self.members[str(new_member_row)][str(new_member_column)] = member
 
-        # Add the new member into self.members if the row exists
+        # Add the new member into self.members
         self.members[str(new_member_row)][str(new_member_column)] = member
 
         # * Step 2)
@@ -54,7 +61,22 @@ class Grid():
         self.members = sorted_members
 
         # * Step 3)
+        self.update_members_positions()
+
+        # * Step 4)
+        return (self.members[str(new_member_row)][str(new_member_column)].x, self.members[str(new_member_row)][str(new_member_column)].y)
+
+    def update_members_positions(self):
+        """
+        Updates the positions of the members in the grid.
+
+        This function iterates over the members in the grid and updates their x and y positions 
+        based on the grid's x and y coordinates, as well as the margin between members.
+        It also calculates the height and width of the grid based on the size of the members.
+        """
+
         y = self.y
+        widest_width = 0
         for row_value in self.members.values():
             x = self.x
             highest_height = 0
@@ -65,15 +87,31 @@ class Grid():
                 x += column_value.width + self.margin
                 if column_value.height > highest_height:
                     highest_height = column_value.height
+            if x > widest_width:
+                widest_width = x
             y += highest_height + self.margin
+        self.height = y - self.pos[1]
+        self.width = widest_width - self.pos[0]
 
-        # * Step 4)
-        return (self.members[str(new_member_row)][str(new_member_column)].x, self.members[str(new_member_row)][str(new_member_column)].y)
+    def grid(self, row, column):
+        if self.parent is not None:
+            self.row = row
+            self.column = column
+
+            new_pos = self.parent.add(self, row, column)
+
+            self.x = new_pos[0]
+            self.y = new_pos[1]
+            self.pos = (self.x, self.y)
 
     def draw_members(self):
         for row in self.members.values():
             for member in row.values():
-                member.draw()
+                if isinstance(member, Grid):
+                    member.update_members_positions()
+                    member.draw_members()
+                else:
+                    member.draw()
 
     def get_key(self, target_value, row):
         for key, value in self.members[row].items():

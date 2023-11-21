@@ -1,5 +1,6 @@
 import pygame
 from button import Button
+from label import Label
 from grid import Grid
 import os
 
@@ -15,25 +16,39 @@ class App():
 
         self.frame = Grid(100, 100)
 
-        self.button1 = Button(self.frame, 100, 50, 'Button1', 20, (0, 0, 0), (150, 150, 150), (200, 200, 200), (255, 255, 255), self.click,
+        self.button_frame1 = Grid(0, 0, self.frame)
+        self.button_frame2 = Grid(0, 0, self.frame)
+
+        self.button1 = Button(self.button_frame1, 100, 50, 'Button1', 20, (0, 0, 0), (150, 150, 150), (200, 200, 200), (255, 255, 255), self.click,
                               self.screen)
-        self.button2 = Button(self.frame, 100, 50, 'Button2', 20, (0, 0, 0), (150, 150, 150), (200, 200, 200), (255, 255, 255), self.click,
+        self.button2 = Button(self.button_frame1, 100, 50, 'Button2', 20, (0, 0, 0), (150, 150, 150), (200, 200, 200), (255, 255, 255), self.click,
                               self.screen)
-        self.button3 = Button(self.frame, 100, 50, 'Button3', 20, (0, 0, 0), (150, 150, 150), (200, 200, 200), (255, 255, 255), self.click,
+        self.button3 = Button(self.button_frame1, 100, 50, 'Button3', 20, (0, 0, 0), (150, 150, 150), (200, 200, 200), (255, 255, 255), self.click,
                               self.screen)
-        self.button4 = Button(self.frame, 100, 50, 'Button4', 20, (0, 0, 0), (150, 150, 150), (200, 200, 200), (255, 255, 255), self.click,
+        self.button4 = Button(self.button_frame2, 100, 50, 'Button4', 20, (0, 0, 0), (150, 150, 150), (200, 200, 200), (255, 255, 255), self.click,
                               self.screen)
-        self.button5 = Button(self.frame, 100, 50, 'Button5', 20, (0, 0, 0), (150, 150, 150), (200, 200, 200), (255, 255, 255), self.click,
+        self.button5 = Button(self.button_frame2, 100, 50, 'Button5', 20, (0, 0, 0), (150, 150, 150), (200, 200, 200), (255, 255, 255), self.click,
                               self.screen)
-        self.button6 = Button(self.frame, 100, 50, 'Button6', 20, (0, 0, 0), (150, 150, 150), (200, 200, 200), (255, 255, 255), self.click,
+        self.button6 = Button(self.button_frame2, 100, 50, 'Button6', 20, (0, 0, 0), (150, 150, 150), (200, 200, 200), (255, 255, 255), self.click,
                               self.screen)
 
+        self.label = Label(self.button_frame1, "Testing purposes are tested now",
+                           20, (0, 0, 0), (255, 0, 0), self.screen)
+
         self.button1.grid(0, 0)
-        self.button2.grid(2, 1)
-        self.button3.grid(0, 2)
-        self.button4.grid(1, 0)
-        self.button5.grid(1, 2)
-        self.button6.grid(2, 0)
+        self.button2.grid(2, 0)
+        self.button3.grid(2, 1)
+        self.button4.grid(0, 0)
+        self.button5.grid(0, 1)
+        self.button6.grid(1, 0)
+
+        self.label.grid(1, 0)
+
+        self.button_frame1.grid(0, 0)
+        self.button_frame2.grid(0, 1)
+
+        # This line makes sure that grids within the main grid are positioned correctly.
+        self.frame.update_members_positions()
 
         self.mainloop()
 
