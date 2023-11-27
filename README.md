@@ -1,3 +1,3 @@
 # tkinter grid system in pygame
 
-This system will be used in my future projects for ui stuff
+This system was meant to be used for future projects but it would be too much work :/
